@@ -1,12 +1,12 @@
 package com.avargas.devops.pruebas.app.microserviciotrazabilidad.infraestructure.out.client.impl;
 
-import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.client.IGenericHttpClient;
+
+import com.avargas.devops.pruebas.app.microserviciotrazabilidad.infraestructure.out.client.IGenericHttpClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.HashMap;
@@ -17,12 +17,9 @@ public class GenericHttpClient implements IGenericHttpClient {
 
     private final WebClient.Builder webClientBuilder;
 
-
-    @Autowired
     public GenericHttpClient(WebClient.Builder webClientBuilder) {
         this.webClientBuilder = webClientBuilder;
     }
-
 
     @Override
     public Map<String, Object> sendRequest(String url, HttpMethod method, Map<String, Object> body,
@@ -68,6 +65,5 @@ public class GenericHttpClient implements IGenericHttpClient {
             throw new RuntimeException("Error en la solicitud HTTP: " + e.getMessage());
         }
     }
-
-
 }
+

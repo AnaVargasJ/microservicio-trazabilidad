@@ -1,4 +1,4 @@
-package com.avargas.devops.pruebas.app.microserviciotrazabilidad.infraestructure.out.security.jwt;
+package com.avargas.devops.pruebas.app.microserviciotrazabilidad.infraestructure.security.jwt;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

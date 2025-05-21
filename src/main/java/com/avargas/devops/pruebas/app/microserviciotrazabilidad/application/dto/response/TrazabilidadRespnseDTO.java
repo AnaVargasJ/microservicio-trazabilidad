@@ -1,18 +1,19 @@
-package com.avargas.devops.pruebas.app.microserviciotrazabilidad.domain.model;
+package com.avargas.devops.pruebas.app.microserviciotrazabilidad.application.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.Date;
-
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TrazabilidadModel {
-    private String id;
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class TrazabilidadRespnseDTO {
+
+    private String idTrazabilidad;
+
     private Long idPedido;
     private String idCliente;
     private String correoCliente;
@@ -21,5 +22,4 @@ public class TrazabilidadModel {
     private String estadoNuevo;
     private Long idEmpleado;
     private String correoEmpleado;
-
 }

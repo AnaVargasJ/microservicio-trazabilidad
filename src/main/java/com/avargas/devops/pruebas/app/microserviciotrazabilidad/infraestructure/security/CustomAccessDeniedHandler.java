@@ -1,6 +1,7 @@
-package com.avargas.devops.pruebas.app.microserviciotrazabilidad.infraestructure.out.security;
+package com.avargas.devops.pruebas.app.microserviciotrazabilidad.infraestructure.security;
 
-import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.shared.ResponseUtil;
+
+import com.avargas.devops.pruebas.app.microserviciotrazabilidad.infraestructure.commons.utils.ResponseUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,16 +15,22 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.avargas.devops.pruebas.app.microserviciotrazabilidad.infraestructure.security.jwt.TokenJwtConfig.CONTENT_TYPE;
+
 @Component
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
+
+    private final String ERROR = "error";
+    private final String RUTA = "error";
+    private final String ERROR_MENSAJE = "Acceso denegado: No tiene permisos para realizar esta operación";
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
         response.setStatus(HttpStatus.FORBIDDEN.value());
-        response.setContentType("application/json");
+        response.setContentType(CONTENT_TYPE);
 
         Map<String, Object> errorResponse = new HashMap<>();
-        errorResponse.put("error", "Acceso denegado: No tiene permisos para realizar esta operación");
-        errorResponse.put("ruta", request.getRequestURI());
+        errorResponse.put(ERROR,ERROR_MENSAJE);
+        errorResponse.put(RUTA, request.getRequestURI());
 
 
         response.getWriter().write(new ObjectMapper().writeValueAsString(ResponseUtil.error("Acceso denegado: No tiene permisos para realizar esta operación",

@@ -1,4 +1,4 @@
-package com.avargas.devops.pruebas.app.microserviciotrazabilidad.infraestructure.out.security.model;
+package com.avargas.devops.pruebas.app.microserviciotrazabilidad.infraestructure.security.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

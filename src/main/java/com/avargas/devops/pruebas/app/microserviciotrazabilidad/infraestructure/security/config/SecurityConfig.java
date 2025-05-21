@@ -1,8 +1,8 @@
-package com.avargas.devops.pruebas.app.microserviciotrazabilidad.infraestructure.out.security.config;
+package com.avargas.devops.pruebas.app.microserviciotrazabilidad.infraestructure.security.config;
 
 
-import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.out.client.impl.GenericHttpClient;
-import com.avargas.devops.pruebas.app.microservicioplazoleta.infraestructure.security.auth.JwtValidationFilter;
+import com.avargas.devops.pruebas.app.microserviciotrazabilidad.infraestructure.out.client.IGenericHttpClient;
+import com.avargas.devops.pruebas.app.microserviciotrazabilidad.infraestructure.security.auth.JwtValidationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -23,7 +23,7 @@ public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
 
-    private final GenericHttpClient genericHttpClient;
+    private final IGenericHttpClient genericHttpClient;
 
     private static final String[] WHITE_LIST_URL = { "/swagger-ui/**",
             "/v3/api-docs/**",
@@ -31,6 +31,8 @@ public class SecurityConfig {
             "/swagger-ui.html",
             "/webjars/**",
             "/public/**"};
+
+    private String BEAN_JWT_VALIDATION = "jwtValidationFilter";
 
     @Bean
     AuthenticationManager authenticationManager() throws Exception {
@@ -53,8 +55,8 @@ public class SecurityConfig {
                 )
                 .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-        // Solo agrega el filtro si está registrado (en perfil !test)
-        if (context.containsBean("jwtValidationFilter")) {
+
+        if (context.containsBean(BEAN_JWT_VALIDATION)) {
             JwtValidationFilter filter = context.getBean(JwtValidationFilter.class);
             security.addFilter(filter);
         }
