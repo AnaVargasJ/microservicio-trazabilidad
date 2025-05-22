@@ -1,5 +1,6 @@
 package com.avargas.devops.pruebas.app.microserviciotrazabilidad.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 public class PedidoModel {
 
     private Long idPedido;
+
     private LocalDateTime fecha;
     private String estado;
     private Long idCliente;

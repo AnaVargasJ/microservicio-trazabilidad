@@ -11,4 +11,6 @@ public interface ITrazabilidadController {
 
     ResponseEntity<?> consultarTrazabilidadPedido(Long idPedido, String idCliente);
     ResponseEntity<?> calcularTiempoPorPedido(HttpServletRequest request, Long idRestaurante);
+
+    ResponseEntity<?> rankingPorEmpleado(HttpServletRequest request, Long idRestaurante);
 }

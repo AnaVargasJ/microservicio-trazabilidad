@@ -7,6 +7,7 @@ import com.avargas.devops.pruebas.app.microserviciotrazabilidad.infraestructure.
 import com.avargas.devops.pruebas.app.microserviciotrazabilidad.infraestructure.out.client.IGenericHttpClient;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
@@ -16,6 +17,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -47,14 +49,24 @@ public class PedidoAdapter implements IClientAdapter {
         List<Map<String, Object>> rawList = (List<Map<String, Object>>) response.get(KEY_RESPUESTA);
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
-        mapper.disable(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE);
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
-        SimpleModule module = new SimpleModule();
-        module.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-        mapper.registerModule(module);
+
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
         return rawList.stream()
-                .map(item -> mapper.convertValue(item, PedidoModel.class))
+                .map(item -> {
+
+                    if (item.containsKey("fecha") && item.get("fecha") instanceof String) {
+                        String fechaStr = (String) item.get("fecha");
+                        LocalDateTime fechaParsed = LocalDate.parse(fechaStr, formatter).atStartOfDay();
+                        item.put("fecha", fechaParsed);
+                    }
+
+                    return mapper.convertValue(item, PedidoModel.class);
+                })
                 .collect(Collectors.toList());
+
     }
 }
