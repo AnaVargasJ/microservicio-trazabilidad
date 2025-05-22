@@ -1,6 +1,7 @@
 package com.avargas.devops.pruebas.app.microserviciotrazabilidad;
 
 import com.avargas.devops.pruebas.app.microserviciotrazabilidad.domain.model.PedidoModel;
+import com.avargas.devops.pruebas.app.microserviciotrazabilidad.domain.model.RankingEmpleadoModel;
 import com.avargas.devops.pruebas.app.microserviciotrazabilidad.domain.model.TrazabilidadModel;
 import com.avargas.devops.pruebas.app.microserviciotrazabilidad.domain.spi.ITrazaPersistencePort;
 import com.avargas.devops.pruebas.app.microserviciotrazabilidad.domain.usecase.TrazabilidadUseCase;
@@ -93,5 +94,36 @@ class TrazabilidadUseCaseTest {
         assertEquals(10L, calculado.getIdChef());
         assertEquals("empleado@mail.com", calculado.getCorreoEmpleado());
     }
+
+    @Test
+    @Order(4)
+    void calcularRankingPorEmpleado_deberiaCalcularPromedioYOrdenar() {
+        PedidoModel pedido1 = new PedidoModel();
+        pedido1.setIdPedido(1L);
+        pedido1.setIdChef(10L);
+        pedido1.setCorreoEmpleado("chef1@mail.com");
+        pedido1.setTiempoEnSegundos(60L);
+
+        PedidoModel pedido2 = new PedidoModel();
+        pedido2.setIdPedido(2L);
+        pedido2.setIdChef(10L);
+        pedido2.setCorreoEmpleado("chef1@mail.com");
+        pedido2.setTiempoEnSegundos(120L);
+
+        PedidoModel pedido3 = new PedidoModel();
+        pedido3.setIdPedido(3L);
+        pedido3.setIdChef(20L);
+        pedido3.setCorreoEmpleado("chef2@mail.com");
+        pedido3.setTiempoEnSegundos(90L);
+
+        List<PedidoModel> pedidos = List.of(pedido1, pedido2, pedido3);
+
+        List<RankingEmpleadoModel> ranking = trazabilidadUseCase.calcularRankingPorEmpleado(pedidos);
+
+        assertEquals(2, ranking.size());
+
+
+    }
+
 
 }
