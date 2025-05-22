@@ -8,6 +8,7 @@ import lombok.Getter;
 public enum Exception {
 
     ERROR_CONSULTAR_USUARIO("Error al consultar el usuario con correo: "),
-    NO_EXISTE_DATOS("No existe datos correspondiente al cliente");
+    NO_EXISTE_DATOS("No existe datos correspondiente al cliente"),
+    DATA_ERROR_CLIENT("Error al obtener pedidos");
     private final String message;
 }

@@ -7,4 +7,5 @@ public interface EndPointApi {
 
     String CREATE_TRAZABILIDAD = "/crearTrazabilidad";
     String BUSCAR_TRAZABILIDAD_CLIENTE_PEDIDO = "/{idCliente}/pedido/{idPedido}";
+    String FILTRAR_PEDIDOS_ID_RESTAURANTE = "/pedidos/{idRestaurante}";
 }
