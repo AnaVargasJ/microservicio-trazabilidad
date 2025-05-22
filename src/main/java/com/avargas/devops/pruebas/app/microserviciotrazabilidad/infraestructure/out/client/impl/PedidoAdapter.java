@@ -5,13 +5,19 @@ import com.avargas.devops.pruebas.app.microserviciotrazabilidad.domain.model.Ped
 import com.avargas.devops.pruebas.app.microserviciotrazabilidad.infraestructure.commons.constants.EndPointApi;
 import com.avargas.devops.pruebas.app.microserviciotrazabilidad.infraestructure.exception.ClientException;
 import com.avargas.devops.pruebas.app.microserviciotrazabilidad.infraestructure.out.client.IGenericHttpClient;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -40,6 +46,12 @@ public class PedidoAdapter implements IClientAdapter {
 
         List<Map<String, Object>> rawList = (List<Map<String, Object>>) response.get(KEY_RESPUESTA);
         ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.disable(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE);
+
+        SimpleModule module = new SimpleModule();
+        module.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        mapper.registerModule(module);
 
         return rawList.stream()
                 .map(item -> mapper.convertValue(item, PedidoModel.class))

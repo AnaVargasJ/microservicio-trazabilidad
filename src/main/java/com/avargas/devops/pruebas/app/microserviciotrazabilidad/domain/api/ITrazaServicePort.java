@@ -11,5 +11,7 @@ public interface ITrazaServicePort {
 
     List<TrazabilidadModel> consultarTrazabilidadPedido(Long idPedido, String idCliente);
 
+    List<PedidoModel> calcularTiempoPorPedido(List<PedidoModel> pedidos);
+
 
 }

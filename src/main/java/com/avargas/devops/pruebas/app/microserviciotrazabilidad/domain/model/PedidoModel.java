@@ -6,8 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -15,12 +13,12 @@ import java.util.List;
 @Builder
 public class PedidoModel {
 
-    private Long id;
+    private Long idPedido;
     private LocalDateTime fecha;
     private String estado;
     private Long idCliente;
     private Long idChef;
     private String correoEmpleado;
-    private Integer tiempoEnSegundos;
+    private Long tiempoEnSegundos;
 }
 

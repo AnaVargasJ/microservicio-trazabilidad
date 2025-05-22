@@ -17,6 +17,6 @@ import java.io.Serializable;
 public class PedidoResponseDTO implements Serializable {
     private Long idPedido;
     private String correoEmpleado;
-    private Integer tiempoEnSegundos;
+    private Long tiempoEnSegundos;
     private Long idEmpleado;
 }

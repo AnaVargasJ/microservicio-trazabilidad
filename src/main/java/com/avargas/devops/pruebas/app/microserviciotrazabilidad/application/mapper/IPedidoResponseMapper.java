@@ -6,14 +6,18 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring",
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
         unmappedSourcePolicy = ReportingPolicy.IGNORE)
 public interface IPedidoResponseMapper {
 
-    @Mapping(source = "id", target = "idPedido")
+
     @Mapping(source = "idChef", target = "idEmpleado")
     @Mapping(target = "correoEmpleado", source = "correoEmpleado")
     @Mapping(target = "tiempoEnSegundos", source = "tiempoEnSegundos")
     PedidoResponseDTO toResponseDto(PedidoModel pedidoModel);
+
+    List<PedidoResponseDTO> toResponseDtoList(List<PedidoModel> pedidoModelList);
 }

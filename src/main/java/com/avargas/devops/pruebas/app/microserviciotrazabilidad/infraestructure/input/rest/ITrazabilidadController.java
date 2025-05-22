@@ -10,4 +10,5 @@ public interface ITrazabilidadController {
     ResponseEntity<?> crearTrazaPedido(HttpServletRequest request, TrazabilidadRequestDTO trazabilidadRequestDTO, UsuarioAutenticado usuarioAutenticado);
 
     ResponseEntity<?> consultarTrazabilidadPedido(Long idPedido, String idCliente);
+    ResponseEntity<?> calcularTiempoPorPedido(HttpServletRequest request, Long idRestaurante);
 }
