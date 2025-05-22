@@ -6,4 +6,5 @@ public interface EndPointApi {
     String URL_BUSCAR_POR_CORREO = "/buscarPorCorreo/{correo}";
 
     String CREATE_TRAZABILIDAD = "/crearTrazabilidad";
+    String BUSCAR_TRAZABILIDAD_CLIENTE_PEDIDO = "/{idCliente}/pedido/{idPedido}";
 }

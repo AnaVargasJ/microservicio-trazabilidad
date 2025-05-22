@@ -37,4 +37,15 @@ class TrazabilidadUseCaseTest {
 
         verify(trazaPersistencePort).guardarTrazabilidad(model);
     }
+
+    @Test
+    @Order(2)
+    void consultarTrazabilidadPedido_delegatesToPersistencePort() {
+        Long idPedido = 1L;
+        String idCliente = "123";
+
+        trazabilidadUseCase.consultarTrazabilidadPedido(idPedido, idCliente);
+
+        verify(trazaPersistencePort).consultarTrazabilidadPedido(idPedido, idCliente);
+    }
 }

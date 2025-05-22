@@ -8,4 +8,6 @@ import org.springframework.http.ResponseEntity;
 public interface ITrazabilidadController {
 
     ResponseEntity<?> crearTrazaPedido(HttpServletRequest request, TrazabilidadRequestDTO trazabilidadRequestDTO, UsuarioAutenticado usuarioAutenticado);
+
+    ResponseEntity<?> consultarTrazabilidadPedido(Long idPedido, String idCliente);
 }
