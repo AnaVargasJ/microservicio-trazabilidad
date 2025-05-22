@@ -35,6 +35,8 @@ public class PedidoAdapter implements IClientAdapter {
     private String baseUrl;
 
     private static final String KEY_RESPUESTA = "respuesta";
+    private static final String KEY_FECHA = "fecha";
+    private static final String FORMATO_FECHA = "dd/MM/yyyy";
 
     @Override
     public List<PedidoModel> obtenerPedidosPorRestaurante(String token, Long idRestaurante) {
@@ -53,15 +55,15 @@ public class PedidoAdapter implements IClientAdapter {
 
 
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(FORMATO_FECHA );
 
         return rawList.stream()
                 .map(item -> {
 
-                    if (item.containsKey("fecha") && item.get("fecha") instanceof String) {
-                        String fechaStr = (String) item.get("fecha");
+                    if (item.containsKey(KEY_FECHA) && item.get(KEY_FECHA) instanceof String) {
+                        String fechaStr = (String) item.get(KEY_FECHA);
                         LocalDateTime fechaParsed = LocalDate.parse(fechaStr, formatter).atStartOfDay();
-                        item.put("fecha", fechaParsed);
+                        item.put(KEY_FECHA, fechaParsed);
                     }
 
                     return mapper.convertValue(item, PedidoModel.class);

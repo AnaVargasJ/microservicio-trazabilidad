@@ -5,6 +5,7 @@ import com.avargas.devops.pruebas.app.microserviciotrazabilidad.domain.model.Ped
 import com.avargas.devops.pruebas.app.microserviciotrazabilidad.domain.model.RankingEmpleadoModel;
 import com.avargas.devops.pruebas.app.microserviciotrazabilidad.domain.model.TrazabilidadModel;
 import com.avargas.devops.pruebas.app.microserviciotrazabilidad.domain.spi.ITrazaPersistencePort;
+import com.avargas.devops.pruebas.app.microserviciotrazabilidad.infraestructure.exception.ClientException;
 import com.avargas.devops.pruebas.app.microserviciotrazabilidad.infraestructure.exception.NoDataFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,11 +13,15 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.avargas.devops.pruebas.app.microserviciotrazabilidad.domain.constants.MensajesDominio.MENSAJE_RANKING_GENERADO;
+import static com.avargas.devops.pruebas.app.microserviciotrazabilidad.domain.constants.MensajesDominio.MENSAJE_SIN_TRAZABILIDAD;
+
 @RequiredArgsConstructor
 @Slf4j
 public class TrazabilidadUseCase implements ITrazaServicePort {
 
     private final ITrazaPersistencePort trazaPersistencePort;
+
     @Override
     public void saveTrazabilidad(TrazabilidadModel trazabilidadModel) {
         trazaPersistencePort.guardarTrazabilidad(trazabilidadModel);
@@ -29,7 +34,7 @@ public class TrazabilidadUseCase implements ITrazaServicePort {
 
     @Override
     public List<PedidoModel> calcularTiempoPorPedido(List<PedidoModel> pedidos) {
-        return pedidos.stream()
+        List<PedidoModel> tiemposPedido = pedidos.stream()
                 .map(pedido -> {
                     try {
                         List<TrazabilidadModel> trazas = trazaPersistencePort.consultarTrazabilidadPedido(
@@ -60,11 +65,20 @@ public class TrazabilidadUseCase implements ITrazaServicePort {
                 })
                 .filter(Objects::nonNull)
                 .toList();
+
+        if (tiemposPedido.isEmpty())
+            throw new ClientException(MENSAJE_SIN_TRAZABILIDAD.getMessage());
+        return tiemposPedido;
     }
 
     @Override
     public List<RankingEmpleadoModel> calcularRankingPorEmpleado(List<PedidoModel> pedidos) {
-        return pedidos.stream()
+
+
+        record EmpleadoStats(String correo, double promedio, long totalPedidos) {
+        }
+
+        List<RankingEmpleadoModel> rankingEmpleadoModels = pedidos.stream()
                 .filter(p -> p.getIdChef() != null && p.getTiempoEnSegundos() != null)
                 .collect(Collectors.groupingBy(
                         PedidoModel::getIdChef,
@@ -76,18 +90,25 @@ public class TrazabilidadUseCase implements ITrazaServicePort {
                                             .mapToLong(PedidoModel::getTiempoEnSegundos)
                                             .average()
                                             .orElse(0);
-                                    return new AbstractMap.SimpleEntry<>(correo, promedio);
+                                    long total = listaPedidos.size();
+                                    return new EmpleadoStats(correo, promedio, total);
                                 }
                         )
                 ))
                 .entrySet().stream()
                 .map(entry -> RankingEmpleadoModel.builder()
                         .idEmpleado(entry.getKey())
-                        .correoEmpleado(entry.getValue().getKey())
-                        .promedioSegundos(entry.getValue().getValue())
+                        .correoEmpleado(entry.getValue().correo())
+                        .promedioSegundos(entry.getValue().promedio())
+                        .totalPedidos(entry.getValue().totalPedidos())
                         .build())
                 .sorted(Comparator.comparingDouble(RankingEmpleadoModel::getPromedioSegundos))
                 .toList();
+
+        if (rankingEmpleadoModels.isEmpty()) {
+            throw new ClientException(MENSAJE_RANKING_GENERADO.getMessage());
+        }
+        return rankingEmpleadoModels;
     }
 
 

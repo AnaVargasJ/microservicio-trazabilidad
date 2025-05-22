@@ -12,6 +12,7 @@ import com.avargas.devops.pruebas.app.microserviciotrazabilidad.application.mapp
 import com.avargas.devops.pruebas.app.microserviciotrazabilidad.domain.api.IClientAdapter;
 import com.avargas.devops.pruebas.app.microserviciotrazabilidad.domain.api.ITrazaServicePort;
 import com.avargas.devops.pruebas.app.microserviciotrazabilidad.domain.model.PedidoModel;
+import com.avargas.devops.pruebas.app.microserviciotrazabilidad.domain.model.RankingEmpleadoModel;
 import com.avargas.devops.pruebas.app.microserviciotrazabilidad.domain.model.TrazabilidadModel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -48,7 +49,9 @@ public class TrazabilidadHandler implements IHandlerTrazabilidad {
 
     @Override
     public List<RankingEmpleadoDTO> rankingPorEmpleado(Long idRestaurante, String token) {
-        List<PedidoModel> pedidosPorRestaurante = clientAdapter.obtenerPedidosPorRestaurante(token, idRestaurante);
-        return rankingEmpleadoMapper.toDtoList(trazaServicePort.calcularRankingPorEmpleado(pedidosPorRestaurante));
+        List<PedidoModel> pedidos = clientAdapter.obtenerPedidosPorRestaurante(token, idRestaurante);
+        List<PedidoModel> pedidosConTiempos = trazaServicePort.calcularTiempoPorPedido(pedidos);
+        List<RankingEmpleadoModel> ranking = trazaServicePort.calcularRankingPorEmpleado(pedidosConTiempos);
+        return rankingEmpleadoMapper.toDtoList(ranking);
     }
 }

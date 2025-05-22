@@ -1,6 +1,8 @@
 package com.avargas.devops.pruebas.app.microserviciotrazabilidad.infraestructure.out.client.impl;
 
 
+import com.avargas.devops.pruebas.app.microserviciotrazabilidad.infraestructure.exception.ClientException;
+import com.avargas.devops.pruebas.app.microserviciotrazabilidad.infraestructure.exception.JsonParseClientException;
 import com.avargas.devops.pruebas.app.microserviciotrazabilidad.infraestructure.out.client.IGenericHttpClient;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,6 +19,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.avargas.devops.pruebas.app.microserviciotrazabilidad.infraestructure.exception.Exception.JSON_EXCEPTION;
+import static com.avargas.devops.pruebas.app.microserviciotrazabilidad.infraestructure.exception.Exception.SOLICITUD_ERROR;
 
 
 public class GenericHttpClient implements IGenericHttpClient {
@@ -64,17 +69,14 @@ public class GenericHttpClient implements IGenericHttpClient {
             try {
                 responseMap = mapper.readValue(rawResponse, Map.class);
             } catch (Exception jsonEx) {
-                responseMap = new HashMap<>();
-                responseMap.put("mensaje", "Error al parsear la respuesta JSON");
-                responseMap.put("respuesta_cruda", rawResponse);
-                responseMap.put("error_detalle", jsonEx.getMessage());
+                throw new JsonParseClientException(JSON_EXCEPTION.getMessage() + jsonEx.getMessage(), jsonEx);
             }
 
             return responseMap;
 
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Error en la solicitud HTTP: " + e.getMessage());
+            throw new JsonParseClientException(SOLICITUD_ERROR.getMessage() + e.getMessage(), e);
+
         }
     }
 }
