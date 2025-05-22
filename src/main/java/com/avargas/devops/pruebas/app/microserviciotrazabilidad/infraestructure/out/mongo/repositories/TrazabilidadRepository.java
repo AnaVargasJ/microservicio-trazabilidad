@@ -7,4 +7,7 @@ import java.util.List;
 
 public interface TrazabilidadRepository extends MongoRepository<TrazabilidadDocument, Long> {
     List<TrazabilidadDocument> findAllByIdPedidoAndIdCliente(Long idPedido, String idCliente);
+
+
+
 }
