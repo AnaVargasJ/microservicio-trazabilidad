@@ -6,6 +6,7 @@ import com.avargas.devops.pruebas.app.microserviciotrazabilidad.application.dto.
 import com.avargas.devops.pruebas.app.microserviciotrazabilidad.application.dto.response.TrazabilidadRespnseDTO;
 import com.avargas.devops.pruebas.app.microserviciotrazabilidad.application.handler.IHandlerTrazabilidad;
 import com.avargas.devops.pruebas.app.microserviciotrazabilidad.application.mapper.IPedidoResponseMapper;
+import com.avargas.devops.pruebas.app.microserviciotrazabilidad.application.mapper.IRankingEmpleadoMapper;
 import com.avargas.devops.pruebas.app.microserviciotrazabilidad.application.mapper.ITrazabilidadRequestMapper;
 import com.avargas.devops.pruebas.app.microserviciotrazabilidad.application.mapper.ITrazabilidadResponseMapper;
 import com.avargas.devops.pruebas.app.microserviciotrazabilidad.domain.api.IClientAdapter;
@@ -26,6 +27,7 @@ public class TrazabilidadHandler implements IHandlerTrazabilidad {
     private final ITrazabilidadResponseMapper responseMapper;
     private final IPedidoResponseMapper pedidoResponseMapper;
     private final IClientAdapter clientAdapter;
+    private final IRankingEmpleadoMapper rankingEmpleadoMapper;
 
     @Override
     public void guardarTrazabilidad(TrazabilidadRequestDTO requestDTO) {
@@ -47,5 +49,6 @@ public class TrazabilidadHandler implements IHandlerTrazabilidad {
     @Override
     public List<RankingEmpleadoDTO> rankingPorEmpleado(Long idRestaurante, String token) {
         List<PedidoModel> pedidosPorRestaurante = clientAdapter.obtenerPedidosPorRestaurante(token, idRestaurante);
+        return rankingEmpleadoMapper.toDtoList(trazaServicePort.calcularRankingPorEmpleado(pedidosPorRestaurante));
     }
 }
