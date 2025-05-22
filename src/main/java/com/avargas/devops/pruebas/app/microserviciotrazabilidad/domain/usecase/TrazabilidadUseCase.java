@@ -2,16 +2,15 @@ package com.avargas.devops.pruebas.app.microserviciotrazabilidad.domain.usecase;
 
 import com.avargas.devops.pruebas.app.microserviciotrazabilidad.domain.api.ITrazaServicePort;
 import com.avargas.devops.pruebas.app.microserviciotrazabilidad.domain.model.PedidoModel;
+import com.avargas.devops.pruebas.app.microserviciotrazabilidad.domain.model.RankingEmpleadoModel;
 import com.avargas.devops.pruebas.app.microserviciotrazabilidad.domain.model.TrazabilidadModel;
 import com.avargas.devops.pruebas.app.microserviciotrazabilidad.domain.spi.ITrazaPersistencePort;
 import com.avargas.devops.pruebas.app.microserviciotrazabilidad.infraestructure.exception.NoDataFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -60,6 +59,34 @@ public class TrazabilidadUseCase implements ITrazaServicePort {
                     }
                 })
                 .filter(Objects::nonNull)
+                .toList();
+    }
+
+    @Override
+    public List<RankingEmpleadoModel> calcularRankingPorEmpleado(List<PedidoModel> pedidos) {
+        return pedidos.stream()
+                .filter(p -> p.getIdChef() != null && p.getTiempoEnSegundos() != null)
+                .collect(Collectors.groupingBy(
+                        PedidoModel::getIdChef,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                listaPedidos -> {
+                                    String correo = listaPedidos.get(0).getCorreoEmpleado();
+                                    double promedio = listaPedidos.stream()
+                                            .mapToLong(PedidoModel::getTiempoEnSegundos)
+                                            .average()
+                                            .orElse(0);
+                                    return new AbstractMap.SimpleEntry<>(correo, promedio);
+                                }
+                        )
+                ))
+                .entrySet().stream()
+                .map(entry -> RankingEmpleadoModel.builder()
+                        .idEmpleado(entry.getKey())
+                        .correoEmpleado(entry.getValue().getKey())
+                        .promedioSegundos(entry.getValue().getValue())
+                        .build())
+                .sorted(Comparator.comparingDouble(RankingEmpleadoModel::getPromedioSegundos))
                 .toList();
     }
 

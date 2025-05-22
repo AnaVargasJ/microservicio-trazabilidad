@@ -1,6 +1,7 @@
 package com.avargas.devops.pruebas.app.microserviciotrazabilidad.infraestructure.input.rest.impl;
 
 import com.avargas.devops.pruebas.app.microserviciotrazabilidad.application.dto.request.TrazabilidadRequestDTO;
+import com.avargas.devops.pruebas.app.microserviciotrazabilidad.application.dto.response.RankingEmpleadoDTO;
 import com.avargas.devops.pruebas.app.microserviciotrazabilidad.application.handler.IHandlerTrazabilidad;
 import com.avargas.devops.pruebas.app.microserviciotrazabilidad.infraestructure.commons.constants.EndPointApi;
 import com.avargas.devops.pruebas.app.microserviciotrazabilidad.infraestructure.commons.utils.ResponseUtil;
@@ -22,10 +23,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 import static com.avargas.devops.pruebas.app.microserviciotrazabilidad.infraestructure.commons.constants.EndPointApi.*;
 import static com.avargas.devops.pruebas.app.microserviciotrazabilidad.infraestructure.shared.MessageUtils.MESAGE_EXITOSO;
+import static com.avargas.devops.pruebas.app.microserviciotrazabilidad.infraestructure.shared.MessageUtils.RAKING_EMPLEADO;
 import static com.avargas.devops.pruebas.app.microserviciotrazabilidad.infraestructure.shared.SwaggerConstants.DESC_ID_CLIENTE;
 import static com.avargas.devops.pruebas.app.microserviciotrazabilidad.infraestructure.shared.SwaggerConstants.DESC_ID_PEDIDO;
 
@@ -36,6 +39,7 @@ import static com.avargas.devops.pruebas.app.microserviciotrazabilidad.infraestr
 public class TrazabilidadController implements ITrazabilidadController {
 
     private final IHandlerTrazabilidad handlerTrazabilidad;
+
     @Override
     @PostMapping(CREATE_TRAZABILIDAD)
     @Operation(
@@ -109,6 +113,37 @@ public class TrazabilidadController implements ITrazabilidadController {
                         MESAGE_EXITOSO.getMessage(),
                         handlerTrazabilidad.calcularTiempoPorPedido(idRestaurante, token),
                         HttpStatus.OK.value()
+                ),
+                HttpStatus.OK
+        );
+    }
+
+    @Override
+    @GetMapping(CONSULTAR_RANKN_EMPLEADOS)
+    @PreAuthorize("hasRole('ROLE_PROP')")
+    @Operation(
+            summary = SwaggerConstants.OP_RANKING_EMPLEADOS_SUMMARY,
+            description = SwaggerConstants.OP_RANKING_EMPLEADOS_DESC
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = SwaggerResponseCode.OK, description = SwaggerConstants.RESPONSE_200_DESC),
+            @ApiResponse(responseCode = SwaggerResponseCode.BAD_REQUEST, description = SwaggerConstants.RESPONSE_400_DESC),
+            @ApiResponse(responseCode = SwaggerResponseCode.UNAUTHORIZED, description = SwaggerConstants.RESPONSE_401_DESC),
+            @ApiResponse(responseCode = SwaggerResponseCode.FORBIDDEN, description = SwaggerConstants.RESPONSE_403_DESC),
+            @ApiResponse(responseCode = SwaggerResponseCode.NOT_FOUND, description = SwaggerConstants.RESPONSE_404_DESC),
+            @ApiResponse(responseCode = SwaggerResponseCode.INTERNAL_SERVER_ERROR, description = SwaggerConstants.RESPONSE_500_DESC)
+    })
+    public ResponseEntity<?> rankingPorEmpleado(HttpServletRequest request,
+                                                @Parameter(description = DESC_ID_PEDIDO, required = true)
+                                                @PathVariable("idRestaurante")
+                                                Long idRestaurante) {
+        String token = request.getHeader(TokenJwtConfig.HEADER_AUTHORIZATION);
+
+        List<RankingEmpleadoDTO> ranking = handlerTrazabilidad.rankingPorEmpleado(idRestaurante, token);
+
+        return new ResponseEntity<>(
+                ResponseUtil.success(RAKING_EMPLEADO.getMessage(),
+                        ranking
                 ),
                 HttpStatus.OK
         );

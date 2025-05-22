@@ -2,6 +2,7 @@ package com.avargas.devops.pruebas.app.microserviciotrazabilidad.application.han
 
 import com.avargas.devops.pruebas.app.microserviciotrazabilidad.application.dto.request.TrazabilidadRequestDTO;
 import com.avargas.devops.pruebas.app.microserviciotrazabilidad.application.dto.response.PedidoResponseDTO;
+import com.avargas.devops.pruebas.app.microserviciotrazabilidad.application.dto.response.RankingEmpleadoDTO;
 import com.avargas.devops.pruebas.app.microserviciotrazabilidad.application.dto.response.TrazabilidadRespnseDTO;
 import com.avargas.devops.pruebas.app.microserviciotrazabilidad.application.handler.IHandlerTrazabilidad;
 import com.avargas.devops.pruebas.app.microserviciotrazabilidad.application.mapper.IPedidoResponseMapper;
@@ -41,5 +42,10 @@ public class TrazabilidadHandler implements IHandlerTrazabilidad {
     public List<PedidoResponseDTO> calcularTiempoPorPedido(Long idRestaurante, String token) {
        List<PedidoModel> pedidosPorRestaurante = clientAdapter.obtenerPedidosPorRestaurante(token, idRestaurante);
         return pedidoResponseMapper.toResponseDtoList(trazaServicePort.calcularTiempoPorPedido(pedidosPorRestaurante));
+    }
+
+    @Override
+    public List<RankingEmpleadoDTO> rankingPorEmpleado(Long idRestaurante, String token) {
+        List<PedidoModel> pedidosPorRestaurante = clientAdapter.obtenerPedidosPorRestaurante(token, idRestaurante);
     }
 }
